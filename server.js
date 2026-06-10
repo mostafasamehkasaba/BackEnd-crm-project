@@ -1,7 +1,15 @@
-import app from "./index.js";
+import express from "express";
+import userRouter from "./src/modules/auth/auth.route.js";
+const app = express();
 
-const port = 8000;
+app.use(express.json());
 
-app.listen(port, () => {
-  console.log(`server is running on port ${port}`);
+app.get("/", (req, res) => {
+  res.send("test");
 });
+
+
+app.use("/api/auth/",userRouter)
+
+
+export default app;

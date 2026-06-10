@@ -1,10 +1,13 @@
-import express from "express";
-const app = express();
-app.use(express.json());
-app.get("/", (req, res) => {
-  res.send("test");
+import dotenv from "dotenv";
+dotenv.config();
+
+import app from "./server.js";
+import { DBconnection } from "./src/DB/connectionDB.js";
+
+const port = 8000;
+
+DBconnection();
+
+app.listen(port, () => {
+  console.log(`server is running on port ${port}`);
 });
-app.use("{/*dummy}", (req, res) => {
-  res.status(404).json({ message: "invalid application routing" });
-});
-export default app;
