@@ -1,15 +1,13 @@
-import express from "express";
-import userRouter from "./src/modules/auth/auth.route.js";
-const app = express();
+import dotenv from "dotenv";
+dotenv.config();
 
-app.use(express.json());
+import app from "./index.js";
+import { DBconnection } from "./src/DB/connectionDB.js";
 
-app.get("/", (req, res) => {
-  res.send("test");
+const port = 8000;
+
+DBconnection();
+
+app.listen(port, () => {
+  console.log(`server is running on port ${port}`);
 });
-
-
-app.use("/api/auth/",userRouter)
-
-
-export default app;

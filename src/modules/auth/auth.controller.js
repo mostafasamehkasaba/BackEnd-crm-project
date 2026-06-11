@@ -11,25 +11,26 @@ const registerController = async (req, res, next) => {
 
 const loginController = async (req, res, next) => {
   try {
-    const { asccessToken, RefreshToken, user } = await US.login(req.body);
+    const { accessToken , refreshToken, user } = await US.login(req.body);
 
     // Access Token cookie
-    res.cookie("asccessToken", asccessToken, {
+    res.cookie("accessToken", accessToken, {
       httpOnly: true,
       maxAge: 15 * 60 * 1000,
     });
 
     // Refresh Token cookie
-    res.cookie("RefreshToken", RefreshToken, {
+    res.cookie("RefreshToken", refreshToken, {
       httpOnly: true,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res.status(200).json({
-      message: "user logged successfully",
+      message: user.role === "ADMIN" ? "Admin logged in sucessfuly" : "user Logged sucessfuly ",
       user,
-      asccessToken,
-      RefreshToken
+     
+      accessToken,
+      refreshToken
     });
 
   } catch (err) {
@@ -39,5 +40,24 @@ const loginController = async (req, res, next) => {
     });
   }
 };
+const refreshTokenController = async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+    const result = await US.refreshToken(refreshToken);
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(401).json({ message: err.message });
+  }
+};
 
-export { registerController, loginController };
+const logoutController = async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+    const result = await US.logout(refreshToken);
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+export { registerController, loginController, refreshTokenController, logoutController };
