@@ -8,16 +8,20 @@ export const getProperty = async (id) => {
   return await propertyModel.findById(id);
 };
 //! create property
-export const addProperty = async (props) => {
-  return await propertyModel.create(props);
+export const addProperty = async (data, user) => {
+  return await propertyModel.create({
+    ...data,
+    user_id: user._id,
+  });
 };
 //!  update property
-export const updateProperty = async (props) => {
-  return await propertyModel.findByIdAndUpdate(props);
+export const updateProperty = async (id, data) => {
+  return await propertyModel.findByIdAndUpdate(id, data, {
+    new: true,
+    runValidators: true,
+  });
 };
 //!  delete property
 export const deleteProperty = async (id) => {
-  return await propertyModel.findByIdAndUpdate(id, data, {
-    new: true,
-  });
+  return await propertyModel.findByIdAndDelete(id);
 };

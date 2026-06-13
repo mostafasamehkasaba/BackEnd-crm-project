@@ -37,9 +37,9 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 //! create property
-router.post("/addproperty", async (req, res, next) => {
+router.post("/addproperty", auth, adminOnly, async (req, res, next) => {
   try {
-    const result = await addProperty(req.body);
+    const result = await addProperty(req.body, req.user);
     res.status(201).json({
       message: "Success",
       data: result,
@@ -49,7 +49,7 @@ router.post("/addproperty", async (req, res, next) => {
   }
 });
 //!  update property
-router.put("/updateproperty/:id", async (req, res, next) => {
+router.put("/updateproperty/:id", auth, adminOnly, async (req, res, next) => {
   try {
     const result = await updateProperty(req.params.id, req.body);
     if (!result) {
@@ -66,21 +66,26 @@ router.put("/updateproperty/:id", async (req, res, next) => {
   }
 });
 //!  delete property
-router.delete("/deleteproperty/:id", async (req, res, next) => {
-  try {
-    const result = await deleteProperty(req.params.id);
+router.delete(
+  "/deleteproperty/:id",
+  auth,
+  adminOnly,
+  async (req, res, next) => {
+    try {
+      const result = await deleteProperty(req.params.id);
 
-    if (!result) {
-      return res.status(404).json({
-        message: "Property not found",
+      if (!result) {
+        return res.status(404).json({
+          message: "Property not found",
+        });
+      }
+      res.status(201).json({
+        message: "Property deleted successfully",
+        data: result,
       });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
     }
-    res.status(201).json({
-      message: "Property deleted successfully",
-      data: result,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+  },
+);
 export default router;
