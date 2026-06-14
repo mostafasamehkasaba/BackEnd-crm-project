@@ -50,7 +50,6 @@ const propertySchema = new mongoose.Schema({
   },
   images: [{
     type: String,
-    required: true,
   }],
   status: {
     type: String,
