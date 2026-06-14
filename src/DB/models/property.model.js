@@ -1,69 +1,62 @@
 import mongoose from "mongoose";
 
-const propertySchema = new mongoose.Schema(
-  {
-    title: {
-      type: String,
-      required: true,
-    },
-    description: {
-      type: String,
-      required: true,
-    },
-    subdescription: {
-      type: String,
-    },
-    property_type: {
-      type: String,
-      enum: ["Apartment", "House", "Villa", "Office", "Land"],
-      required: true,
-    },
-    image: {
-      type: String,
-    },
-    images: [
-      {
-        type: String,
-      },
-    ],
-    location: {
-      type: String,
-    },
-    rating: {
-      type: Number,
-      default: 0,
-      min: 0,
-      max: 5,
-    },
-    price: {
-      type: Number,
-      required: true,
-    },
-
-    bedrooms: {
-      type: Number,
-      default: 0,
-    },
-    bathrooms: {
-      type: Number,
-      default: 0,
-    },
-    area: {
-      type: Number,
-    },
-    parking: {
-      type: Boolean,
-      default: false,
-    },
-    user_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
+const propertySchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true,
+    trim: true,
   },
-  {
-    timestamps: true,
+  description: {
+    type: String,
+    required: true,
   },
-);
+  type: {
+    type: String,
+    enum: ["apartment", "villa", "tourism"],
+    required: true,
+  },
+  bookType: {
+    type: String,
+    enum: ["sale", "rent"],
+    required: true,
+  },
+  location: {
+    type: String,
+    required: true,
+  },
+  region: {
+    type: String,
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
+  area: {
+    type: Number,
+    required: true,
+  },
+  floor: {
+    type: String,
+    required: true,
+  },
+  rooms: {
+    type: Number,
+    required: true,
+  },
+  bathrooms: {
+    type: Number,
+    required: true,
+  },
+  images: [{
+    type: String,
+    required: true,
+  }],
+  status: {
+    type: String,
+    enum: ["available", "sold", "rented"],
+    default: "available",
+  },
+}, { timestamps: true });
 
-export const propertyModel = mongoose.model("Property", propertySchema);
+export const PropertyModel = mongoose.model("Property", propertySchema);

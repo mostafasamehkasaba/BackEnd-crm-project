@@ -88,12 +88,14 @@ const refreshToken =async (token)=>{
 
   }
 
-  if(savedToken.expiresAt <new Date()){
+  if(savedToken.expiresAt < new Date()){
     await Token.deleteOne({token});
     throw new Error ('Refresh token expired ')
   }
 
   const decoded = jwt.verify(token ,process.env.JWT_REFRESH_SECRET)
+
+
   const accessToken= generateAccessToken({
     id : decoded.id,
     role :decoded.role
