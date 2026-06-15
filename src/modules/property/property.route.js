@@ -5,7 +5,7 @@ import {
   createPropertyController,
   updatePropertyController,
   deletePropertyController,
-  uploadImagesController
+  uploadImagesController,deleteImageController,replaceImagesController
 } from "./property.controller.js";
 import auth from "../../common/middleware/auth.middleware.js";
 import adminOnly from "../../common/middleware/admin.middleware.js";
@@ -26,7 +26,13 @@ router.post(
 );
 router.patch("/:id", auth, adminOnly, updatePropertyController);
 router.delete("/:id", auth, adminOnly, deletePropertyController);
+
+
 router.post("/:id/images", auth, adminOnly, upload.array("images", 10), uploadImagesController);
+
+router.put("/:id/images", auth, adminOnly, upload.array("images", 10), replaceImagesController);
+
+router.delete("/:id/images", auth, adminOnly, deleteImageController);
 
 
 export default router;

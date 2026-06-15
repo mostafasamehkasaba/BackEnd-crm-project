@@ -98,4 +98,40 @@ const uploadImages = async (id, files) => {
   return property;
 };
 
-export { getAllproperites, getPropertyById, createProperty, updateProperty, deleteProperty, uploadImages };
+
+
+const replaceImages = async (id, files) => {
+  const cloudinary = configureCloudinary();
+  const property = await PropertyModel.findById(id);
+  if (!property) throw new Error("Property not found");
+
+  const urls = [];
+  for (const file of files) {
+    const result = await new Promise((resolve, reject) => {
+      cloudinary.uploader.upload_stream(
+        { folder: "real-estate" },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      ).end(file.buffer);
+    });
+    urls.push(result.secure_url);
+  }
+
+  property.images = urls;  // ← بيستبدل مش بيضيف
+  await property.save();
+  return property;
+};
+
+
+const deleteImage = async (id, imageUrl) => {
+  const property = await PropertyModel.findById(id);
+  if (!property) throw new Error("Property not found");
+
+  property.images = property.images.filter(img => img !== imageUrl);
+  await property.save();
+  return property;
+};
+
+export { getAllproperites, getPropertyById, createProperty, updateProperty, deleteProperty, uploadImages,deleteImage };

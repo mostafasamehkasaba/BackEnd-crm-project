@@ -67,6 +67,24 @@ const uploadImagesController =async (req,res) =>{
   }
 }
 
+const replaceImagesController = async (req, res) => {
+  try {
+    const property = await PS.replaceImages(req.params.id, req.files);
+    res.status(200).json({ message: "Images replaced successfully", data: property });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+const deleteImageController = async (req, res) => {
+  try {
+    const property = await PS.deleteImage(req.params.id, req.body.imageUrl);
+    res.status(200).json({ message: "Image deleted successfully", data: property });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
 
 export {
   getAllPropertiesController,
@@ -74,5 +92,7 @@ export {
   createPropertyController,
   updatePropertyController,
   deletePropertyController,
-  uploadImagesController
+  uploadImagesController,
+  replaceImagesController,
+  deleteImageController
 };
