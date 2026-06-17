@@ -1,8 +1,9 @@
 import { PropertyModel } from "../../DB/models/property.model.js";
 import configureCloudinary from "../../config/cloudinary.js";
-
+import pagination from "../../common/utils/pagination.util.js";
 const getAllproperites = async (query = {}) => {
   const { type, bookType, region, minPrice, maxPrice } = query;
+  const {page,limit,skip} = pagination(query)
 
   const filter = {};
 
@@ -16,8 +17,20 @@ const getAllproperites = async (query = {}) => {
     if (maxPrice) filter.price.$lte = Number(maxPrice);
   }
 
-  const properties = await PropertyModel.find(filter);
-  return properties;
+  const totalProperites = await PropertyModel.countDocuments(filter)
+ const  totalPages = Math.ceil(totalProperites / limit)
+
+  const properties = await PropertyModel.find(filter).skip(skip).limit(Number(limit))
+  .sort({createdAt : -1})
+  return {
+    data :properties,
+    pagination :{
+      totalProperites,
+      totalPages,
+      currentPage : page,
+      limit
+    }
+  };
 };
 
 const getPropertyById = async (id) => {
@@ -130,7 +143,9 @@ const deleteImage = async (id, imageUrl) => {
   if (!property) throw new Error("Property not found");
 
   property.images = property.images.filter(img => img !== imageUrl);
+
   await property.save();
+  
   return property;
 };
 

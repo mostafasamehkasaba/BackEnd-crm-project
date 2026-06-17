@@ -105,6 +105,7 @@ export const getVerifyEmailTemplate = (verifyLink) => {
       </div>
 
     </body>
+    
     </html>
   `;
 };

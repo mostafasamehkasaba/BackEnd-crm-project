@@ -1,27 +1,32 @@
-import dotenv from "dotenv"
-dotenv.config()
-import nodemailer from "nodemailer"
-import { getVerifyEmailTemplate } from "./emailTemplete.js";
+import dotenv from "dotenv";
+dotenv.config();
+import nodemailer from "nodemailer";
+import { getVerifyEmailTemplate } from "./emailTemplete.js"; // تأكد من اسم الفولدر والملف صح
 
-const transproter =nodemailer.createTransport({
-    service : "gmail",
-    auth :{
-        user :process.env.EMAIL_USER,
-        pass :process.env.EMAIL_PASS 
+const transproter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        // ضفنا الـ trim() عشان لو في أي مسافة فاضية في الـ env تتشال ومتبوظش الـ password
+        user: process.env.EMAIL_USER?.trim(),
+        pass: process.env.EMAIL_PASS?.trim() 
     },
 });
 
-console.log("EMAIL_USER:", process.env.EMAIL_USER);
-console.log("EMAIL_PASS:", process.env.EMAIL_PASS);
+export const sendEmail = async (to, token) => {
+    try {
+      const verifyLink = `http://localhost:8000/api/auth/verify-email/${encodeURIComponent(token)}`;
 
-
-export const sendEmail =async(to,token)=>{
-    const verifyLink = `http://localhost:8000/auth/verify-email/${token}`
-
-    await transproter.sendMail({
-        from :`"Your App "<${process.env.EMAIL_USER}>`,
-        to,
-        subject :"veify your Email",
-        html : getVerifyEmailTemplate(verifyLink)
-    })
-}
+        const info = await transproter.sendMail({
+            from: `"Real Estate CRM" <${process.env.EMAIL_USER}>`,
+            to,
+            subject: "Verify your Email",
+            html: getVerifyEmailTemplate(verifyLink)
+        });
+        
+        console.log("✅ Email sent successfully! MessageID:", info.messageId);
+        return info;
+    } catch (error) {
+        console.error("❌ Gmail Error: ", error.message);
+        throw new Error("Failed to send verification email: " + error.message);
+    }
+};

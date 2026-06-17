@@ -4,37 +4,45 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      minlength: [3, "must be at least 3 characters"],
-      maxlength: [30, "must be less than 30 characters"],
-      required: true,
+      required: [true, "Name is required"],
       trim: true,
+      minlength: [3, "Name must be at least 3 characters"],
+      maxlength: [30, "Name must be less than 30 characters"],
     },
 
     email: {
       type: String,
-      required: true,
+      required: [true, "Email is required"],
       unique: true,
       trim: true,
       lowercase: true,
-      match: [/^\S+@\S+\.\S+$/, "invalid email"],
+      match: [
+        /^\S+@\S+\.\S+$/,
+        "Please enter a valid email address",
+      ],
     },
 
     phone: {
       type: String,
-      required: true,
-      trim: true,
-      minlength: [11],
-      maxlength: [50],
+      required: [true, "Phone number is required"],
+      match: [
+        /^01[0125][0-9]{8}$/,
+        "Please enter a valid Egyptian phone number",
+      ],
     },
 
     password: {
       type: String,
-      required: true,
+      required: [true, "Password is required"],
+      minlength: [8, "Password must be at least 8 characters"],
     },
 
     role: {
       type: String,
-      enum: ["CLIENT", "ADMIN"],
+      enum: {
+        values: ["CLIENT", "ADMIN"],
+        message: "Role must be CLIENT or ADMIN",
+      },
       default: "CLIENT",
     },
 
@@ -42,9 +50,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 export const Usermodel = mongoose.model("User", userSchema);

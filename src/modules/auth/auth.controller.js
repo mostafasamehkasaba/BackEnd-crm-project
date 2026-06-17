@@ -1,52 +1,53 @@
 import * as US from "./auth.service.js";
+import successResponse from "../../common/responses/successResponse.js";
+import errorResponse from "../../common/responses/errorResponse.js";
+import { HttpStatus } from "../../common/constants/httpStatus.constant.js";
 
 const registerController = async (req, res, next) => {
   try {
     const result = await US.register(req.body);
-    res.status(201).json(result);
+    return successResponse(res, "تم إنشاء الحساب بنجاح", result, HttpStatus.CREATED);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    return errorResponse(res, err.message, HttpStatus.BAD_REQUEST);
   }
 };
 
 const loginController = async (req, res, next) => {
   try {
-    const { accessToken , refreshToken, user } = await US.login(req.body);
+    const { accessToken, refreshToken, user } = await US.login(req.body);
 
-    // Access Token cookie
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       maxAge: 15 * 60 * 1000,
     });
 
-    // Refresh Token cookie
-    res.cookie("RefreshToken", refreshToken, {
+    res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.status(200).json({
-      message: user.role === "ADMIN" ? "Admin logged in sucessfuly" : "user Logged sucessfuly ",
+    const message = user.role === "ADMIN" ? "Admin logged in sucessfuly" : "user Logged sucessfuly ";
+
+    const responseData = {
       user,
-     
       accessToken,
       refreshToken
-    });
+    };
+
+    return successResponse(res, message, responseData, HttpStatus.OK);
 
   } catch (err) {
-    res.status(400).json({
-      message: "error in email or password",
-      error: err.message,
-    });
+    return errorResponse(res, "error in email or password", HttpStatus.BAD_REQUEST, err.message);
   }
 };
+
 const refreshTokenController = async (req, res) => {
   try {
     const { refreshToken } = req.body;
     const result = await US.refreshToken(refreshToken);
-    res.status(200).json(result);
+    return successResponse(res, "تم تجديد التوكن بنجاح", result, HttpStatus.OK);
   } catch (err) {
-    res.status(401).json({ message: err.message });
+    return errorResponse(res, err.message, HttpStatus.UNAUTHORIZED);
   }
 };
 
@@ -54,19 +55,25 @@ const logoutController = async (req, res) => {
   try {
     const { refreshToken } = req.body;
     const result = await US.logout(refreshToken);
-    res.status(200).json(result);
+    return successResponse(res, "تم تسجيل الخروج بنجاح", result, HttpStatus.OK);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    return errorResponse(res, err.message, HttpStatus.BAD_REQUEST);
   }
 };
 
-const verifiyEmailController =async(req,res) =>{
-  try{
-    const result = await US.verifyEmail(req.params.token)
-    res.status(200).json(result)
-  }catch(err){
-    res.status(400).json(({message : err.message}))
+const verifiyEmailController = async (req, res) => {
+  try {
+    const result = await US.verifyEmail(req.params.token);
+    return successResponse(res, "تم تفعيل الإيميل بنجاح", result, HttpStatus.OK);
+  } catch (err) {
+    return errorResponse(res, err.message, HttpStatus.BAD_REQUEST);
   }
-}
+};
 
-export { registerController, loginController, refreshTokenController, logoutController ,verifiyEmailController};
+export { 
+  registerController, 
+  loginController, 
+  refreshTokenController, 
+  logoutController, 
+  verifiyEmailController 
+};

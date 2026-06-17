@@ -28,7 +28,7 @@ const register = async (data) => {
   });
 
   const token = jwt.sign(
-  { id: user._id },
+  { id: user._id.toString() },
   process.env.EMAIL_SECRET,
   { expiresIn: "1h" }
 );
@@ -50,6 +50,9 @@ const login = async (data) => {
     throw new Error("user doesnt exists must be register");
   }
 
+  if (user.isConfirmEmail === false || !user.isConfirmEmail) {
+    throw new Error("please verify your email frist ");
+}
   const isPasswordMatched = await bcrypt.compare(password, user.password);
     
   if (!isPasswordMatched) {
@@ -121,12 +124,28 @@ const logout = async (token) => {
 };
 
 const verifyEmail = async (token) => {
-  const decoded = jwt.verify(token, process.env.EMAIL_SECRET);
+  try {
+    const decoded = jwt.verify(token, process.env.EMAIL_SECRET);
 
-  await Usermodel.findByIdAndUpdate(decoded.id, {
-    isConfirmEmail: true,
-  });
+    console.log("decoded:", decoded);
+    console.log("الـ ID اللي جوه الـ Token هو:", decoded.id);
 
-  return { message: "Email verified successfully" };
+    const updatedUser = await Usermodel.findByIdAndUpdate(
+      decoded.id,
+      { isConfirmEmail: true },
+      { new: true }
+    );
+
+
+    if (!updatedUser) {
+      throw new Error("User not found");
+    }
+    console.log("TOKEN RECEIVED:", req.params.token);
+    return { message: "Email verified successfully" };
+
+  } catch (err) {
+    console.log("VERIFY ERROR:", err.message);
+    throw err;
+  }
 };
 export { register, login, refreshToken, logout,verifyEmail };
