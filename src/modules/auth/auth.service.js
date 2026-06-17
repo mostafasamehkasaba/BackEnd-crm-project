@@ -3,7 +3,8 @@ import { Usermodel } from "../../DB/models/auth.model.js";
 import CryptoJS from "crypto-js";
 import { generateAccessToken, generateRefreshToken } from "../../common/utils/jwt.js";
 import Token from "../../DB/models/token.model.js";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
+import { sendEmail } from "../../services/sendEmail.js";
 const register = async (data) => {
   const { name, email, password, phone, confirmPassword } = data;
 
@@ -25,6 +26,15 @@ const register = async (data) => {
     phone: hashedPhone,
     password: hashedPassword,
   });
+
+  const token = jwt.sign(
+  { id: user._id },
+  process.env.EMAIL_SECRET,
+  { expiresIn: "1h" }
+);
+
+
+    await sendEmail(user.email, token);
 
   return {
     message: "user created successfully",
@@ -110,4 +120,13 @@ const logout = async (token) => {
   return { message: "logged out successfully" };
 };
 
-export { register, login, refreshToken, logout };
+const verifyEmail = async (token) => {
+  const decoded = jwt.verify(token, process.env.EMAIL_SECRET);
+
+  await Usermodel.findByIdAndUpdate(decoded.id, {
+    isConfirmEmail: true,
+  });
+
+  return { message: "Email verified successfully" };
+};
+export { register, login, refreshToken, logout,verifyEmail };

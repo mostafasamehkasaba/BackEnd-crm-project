@@ -60,4 +60,13 @@ const logoutController = async (req, res) => {
   }
 };
 
-export { registerController, loginController, refreshTokenController, logoutController };
+const verifiyEmailController =async(req,res) =>{
+  try{
+    const result = await US.verifyEmail(req.params.token)
+    res.status(200).json(result)
+  }catch(err){
+    res.status(400).json(({message : err.message}))
+  }
+}
+
+export { registerController, loginController, refreshTokenController, logoutController ,verifiyEmailController};
