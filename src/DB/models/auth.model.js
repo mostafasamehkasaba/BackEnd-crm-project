@@ -25,10 +25,10 @@ const userSchema = new mongoose.Schema(
     phone: {
       type: String,
       required: [true, "Phone number is required"],
-      match: [
-        /^01[0125][0-9]{8}$/,
-        "Please enter a valid Egyptian phone number",
-      ],
+      // match: [
+      //   /^01[0125][0-9]{8}$/,
+      //   "Please enter a valid Egyptian phone number",
+      // ],
     },
 
     password: {

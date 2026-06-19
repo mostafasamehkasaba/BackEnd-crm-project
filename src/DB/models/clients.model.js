@@ -1,6 +1,6 @@
 import mongoose, { Schema, Types } from "mongoose";
 
-const paymentPlanSchema = new Schema(
+const ClientSchema = new Schema(
   {
     user_id: {
       type: Types.ObjectId,
@@ -55,4 +55,4 @@ const paymentPlanSchema = new Schema(
   },
 );
 
-export const userPlanModel = mongoose.model("userPlanModel", paymentPlanSchema);
+export const clientModel = mongoose.model("Client", ClientSchema);

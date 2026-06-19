@@ -1,6 +1,7 @@
 import { PropertyModel } from "../../DB/models/property.model.js";
 import configureCloudinary from "../../config/cloudinary.js";
 import pagination from "../../common/utils/pagination.util.js";
+import { json } from "express";
 const getAllproperites = async (query = {}) => {
   const { type, bookType, region, minPrice, maxPrice } = query;
   const {page,limit,skip} = pagination(query)
@@ -62,9 +63,18 @@ const createProperty = async (data, files) => {
     }
   }
   
+  let parsedFeatures = [];
+  if(data.features){
+    try{
+      parsedFeatures = typeof data.features === "string" ? JSON.parse(data.features) : data.features;
+    }catch(err){
+      throw new Error("Invaild format for feature")
+    }
+  }
 
   const property = await PropertyModel.create({
     ...data,
+    features :parsedFeatures,
     images: urls,
   });
 

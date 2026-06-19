@@ -1,4 +1,4 @@
-import { userPlanModel } from "../../DB/models/user.model.js";
+import { clientModel } from "../../DB/models/clients.model.js";
 
 export const createClient = async (req, res) => {
   try {
@@ -11,7 +11,7 @@ export const createClient = async (req, res) => {
       installments,
     } = req.body;
 
-    const client = await userPlanModel.create({
+    const client = await clientModel.create({
       user_id,
       property_id,
       totalPrice,
@@ -32,7 +32,7 @@ export const createClient = async (req, res) => {
 };
 export const getAllClients = async (req, res) => {
   try {
-    const clients = await userPlanModel
+    const clients = await clientModel
       .find()
       .populate("user_id", "name email phone")
       .populate("property_id", "title type price ");
@@ -48,7 +48,7 @@ export const getAllClients = async (req, res) => {
   }
 };
 export const getDebtClients = async (req, res) => {
-  const clients = await userPlanModel
+  const clients = await clientModel
     .find({
       "installments.status": "PENDING",
     })
@@ -61,7 +61,7 @@ export const getDebtClients = async (req, res) => {
   });
 };
 export const getPaidClients = async (req, res) => {
-  const clients = await userPlanModel
+  const clients = await clientModel
     .find({
       "installments.status": "PAID",
     })
@@ -76,13 +76,13 @@ export const getPaidClients = async (req, res) => {
 
 export const getDashboardStats = async (req, res) => {
   try {
-    const totalClients = await userPlanModel.countDocuments();
+    const totalClients = await clientModel.countDocuments();
 
-    const debtClients = await userPlanModel.countDocuments({
+    const debtClients = await clientModel.countDocuments({
       "installments.status": "PENDING",
     });
 
-    const sales = await userPlanModel.aggregate([
+    const sales = await clientModel.aggregate([
       { $unwind: "$installments" },
       { $match: { "installments.status": "PAID" } },
       {
@@ -107,7 +107,7 @@ export const deleteClient = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const client = await userPlanModel.findById(id);
+    const client = await clientModel.findById(id);
 
     if (!client) {
       return res.status(404).json({

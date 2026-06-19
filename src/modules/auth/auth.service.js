@@ -53,13 +53,20 @@ const login = async (data) => {
   if (user.isConfirmEmail === false || !user.isConfirmEmail) {
     throw new Error("please verify your email frist ");
 }
-  const isPasswordMatched = await bcrypt.compare(password, user.password);
+console.log("Password from request:", password);
+console.log("Password from DB:", user.password);
+const isPasswordMatched = bcrypt.compareSync(
+  password.trim(),
+  user.password
+);
     
   if (!isPasswordMatched) {
     const error = new Error("wrong password");
     error.status = 401;
     throw error;
   }
+
+  console.log("Matched:", isPasswordMatched);
 
   const payload = {
     id: user._id,
@@ -118,6 +125,8 @@ const refreshToken =async (token)=>{
 
 }
 
+
+
 const logout = async (token) => {
   await Token.deleteOne({ token });
   return { message: "logged out successfully" };
@@ -127,24 +136,28 @@ const verifyEmail = async (token) => {
   try {
     const decoded = jwt.verify(token, process.env.EMAIL_SECRET);
 
-    console.log("decoded:", decoded);
-    console.log("الـ ID اللي جوه الـ Token هو:", decoded.id);
+    const user = await Usermodel.findById(decoded.id);
 
-    const updatedUser = await Usermodel.findByIdAndUpdate(
-      decoded.id,
-      { isConfirmEmail: true },
-      { new: true }
-    );
-
-
-    if (!updatedUser) {
+    if (!user) {
       throw new Error("User not found");
     }
-    console.log("TOKEN RECEIVED:", req.params.token);
+
+    if (user.isConfirmEmail) {
+      return { message: "Email already verified" };
+    }
+
+    user.isConfirmEmail = true;
+    await user.save();
+
     return { message: "Email verified successfully" };
 
   } catch (err) {
     console.log("VERIFY ERROR:", err.message);
+
+    if (err.name === "TokenExpiredError") {
+      throw new Error("Verification link expired, please resend email");
+    }
+
     throw err;
   }
 };

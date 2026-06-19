@@ -10,10 +10,10 @@ const propertySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  type: {
-    type: String,
-    enum: ["apartment", "villa", "tourism"],
-    required: true,
+  category :{
+    type : mongoose.Schema.Types.ObjectId,
+    ref : "Category",
+    required : true
   },
   bookType: {
     type: String,
@@ -32,22 +32,15 @@ const propertySchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  area: {
-    type: Number,
-    required: true,
-  },
-  floor: {
-    type: String,
-    required: true,
-  },
-  rooms: {
-    type: Number,
-    required: true,
-  },
-  bathrooms: {
-    type: Number,
-    required: true,
-  },
+  features : [
+    {
+      filterName : {
+        type : String,
+        required : true
+      },
+      value:{type :String , required : true}
+    }
+  ],
   images: [{
     type: String,
   }],

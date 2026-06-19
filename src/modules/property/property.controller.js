@@ -6,7 +6,7 @@ import { HttpStatus } from "../../common/constants/httpStatus.constant.js";
 const getAllPropertiesController = async (req, res) => {
   try {
     const properties = await PS.getAllproperites(req.query);
-    // بما إن الـ service بيرجع { data, pagination }، بنباصي الـ properties كلها كـ data للـ response
+    
     return successResponse(res, "properties fetched successfully", properties, HttpStatus.OK);
   } catch (err) {
     return errorResponse(res, "failed to get allProperties", HttpStatus.BAD_REQUEST, err.message);
@@ -30,6 +30,8 @@ const createPropertyController = async (req, res) => {
     return errorResponse(res, err.message, HttpStatus.BAD_REQUEST);
   }
 };
+
+
 
 const updatePropertyController = async (req, res) => {
   try {
