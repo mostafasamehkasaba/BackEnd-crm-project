@@ -1,24 +1,8 @@
-import { userPlanModel } from "../../DB/models/user.model.js";
+import * as CS from "./user.service.js";
 
-export const createClient = async (req, res) => {
+export const createClientController = async (req, res) => {
   try {
-    const {
-      user_id,
-      property_id,
-      totalPrice,
-      downPayment,
-      notes,
-      installments,
-    } = req.body;
-
-    const client = await userPlanModel.create({
-      user_id,
-      property_id,
-      totalPrice,
-      downPayment,
-      notes,
-      installments,
-    });
+    const client = await CS.createClient(req.body);
 
     res.status(201).json({
       message: "Client created successfully",
@@ -30,12 +14,11 @@ export const createClient = async (req, res) => {
     });
   }
 };
-export const getAllClients = async (req, res) => {
+export const getAllClientsController = async (req, res) => {
   try {
-    const clients = await userPlanModel
-      .find()
-      .populate("user_id", "name email phone")
-      .populate("property_id", "title type price ");
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 8;
+    const clients = await CS.getAllClients(page, limit);
 
     res.status(200).json({
       message: "getAllClients success",
@@ -47,81 +30,56 @@ export const getAllClients = async (req, res) => {
     });
   }
 };
-export const getDebtClients = async (req, res) => {
-  const clients = await userPlanModel
-    .find({
-      "installments.status": "PENDING",
-    })
-    .populate("user_id")
-    .populate("property_id");
 
-  res.status(200).json({
-    message: "getDebtClients success",
-    clients,
-  });
-};
-export const getPaidClients = async (req, res) => {
-  const clients = await userPlanModel
-    .find({
-      "installments.status": "PAID",
-    })
-    .populate("user_id")
-    .populate("property_id");
-
-  res.status(200).json({
-    message: "getPaidClients success",
-    clients,
-  });
-};
-
-export const getDashboardStats = async (req, res) => {
+export const getDebtClientsController = async (req, res) => {
   try {
-    const totalClients = await userPlanModel.countDocuments();
-
-    const debtClients = await userPlanModel.countDocuments({
-      "installments.status": "PENDING",
-    });
-
-    const sales = await userPlanModel.aggregate([
-      { $unwind: "$installments" },
-      { $match: { "installments.status": "PAID" } },
-      {
-        $group: {
-          _id: null,
-          totalSales: { $sum: "$installments.amount" },
-        },
-      },
-    ]);
+    const clients = await CS.getDebtClients();
 
     res.status(200).json({
-      totalClients,
-      debtClients,
-      totalSales: sales[0]?.totalSales || 0,
+      message: "getDebtClients success",
+      clients,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+export const getPaidClientsController = async (req, res) => {
+  try {
+    const clients = await CS.getPaidClients();
+
+    res.status(200).json({
+      message: "getPaidClients success",
+      clients,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
-export const deleteClient = async (req, res) => {
+export const getDashboardStatsController = async (req, res) => {
   try {
-    const { id } = req.params;
+    const stats = await CS.getDashboardStats();
 
-    const client = await userPlanModel.findById(id);
+    res.status(200).json(stats);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+export const deleteClientController = async (req, res) => {
+  try {
+    await CS.deleteClient(req.params.id);
 
-    if (!client) {
-      return res.status(404).json({
-        message: "Client not found",
-      });
-    }
-
-    await userPlanModel.findByIdAndDelete(id);
-
-    return res.status(200).json({
+    res.status(200).json({
       message: "Client deleted successfully",
     });
   } catch (error) {
-    return res.status(500).json({
+    res.status(404).json({
       message: error.message,
     });
   }
