@@ -1,0 +1,102 @@
+import { userPlanModel } from "../../DB/models/user.model.js";
+
+export const createClient = async (body) => {
+  const { user_id, property_id, totalPrice, downPayment, notes, installments } =
+    body;
+
+  const client = await userPlanModel.create({
+    user_id,
+    property_id,
+    totalPrice,
+    downPayment,
+    notes,
+    installments,
+  });
+
+  return client;
+};
+export const getAllClients = async (page, limit) => {
+  const clients = await userPlanModel
+    .find()
+    .populate("user_id", "name email phone")
+    .populate("property_id", "title type price")
+    .skip((page - 1) * limit)
+    .limit(limit);
+  const result = clients.map((client) => {
+    const installments = client.installments || [];
+
+    const total = installments.length;
+
+    const paid = installments.filter((i) => i.status === "PAID").length;
+
+    const pending = total - paid;
+
+    const percentage = total === 0 ? 0 : (paid / total) * 100;
+
+    return {
+      ...client.toObject(),
+      installmentInfo: {
+        totalInstallments: total,
+        paidInstallments: paid,
+        pendingInstallments: pending,
+        percentage: Math.round(percentage),
+      },
+    };
+  });
+  return result;
+};
+export const getDebtClients = async () => {
+  const clients = await userPlanModel
+    .find({
+      "installments.status": "PENDING",
+    })
+    .populate("user_id")
+    .populate("property_id");
+
+  return clients;
+};
+
+export const getPaidClients = async () => {
+  const clients = await userPlanModel
+    .find({
+      "installments.status": "PAID",
+    })
+    .populate("user_id")
+    .populate("property_id");
+
+  return clients;
+};
+
+export const getDashboardStats = async () => {
+  const totalClients = await userPlanModel.countDocuments();
+
+  const debtClients = await userPlanModel.countDocuments({
+    "installments.status": "PENDING",
+  });
+
+  const sales = await userPlanModel.aggregate([
+    { $unwind: "$installments" },
+    { $match: { "installments.status": "PAID" } },
+    {
+      $group: {
+        _id: null,
+        totalSales: { $sum: "$installments.amount" },
+      },
+    },
+  ]);
+
+  return {
+    totalClients,
+    debtClients,
+    totalSales: sales[0]?.totalSales || 0,
+  };
+};
+export const deleteClient = async (id) => {
+  const client = await userPlanModel.findById(id);
+
+  if (!client) {
+    throw new Error("Client not found");
+  }
+
+  return await userPlanModel.findByIdAndDelete(id);
+};
