@@ -1,61 +1,82 @@
 import * as PS from "./property.service.js";
+import successResponse from "../../common/responses/successResponse.js";
+import errorResponse from "../../common/responses/errorResponse.js";
+import { HttpStatus } from "../../common/constants/httpStatus.constant.js";
 
-const getAllPropertiesController = async (req,res) =>{
-    try{
-            const properites = await PS.getAllproperites(req.body)
-            res.status(200).json({message : "properites fetched sucessfuly" ,count :properites.length,data : properites })
-    }catch(err){
-        res.status(400).json({message : "failed to get allProperites", error: err.message})
-    }
-}
+const getAllPropertiesController = async (req, res) => {
+  try {
+    const properties = await PS.getAllproperites(req.query);
+    
+    return successResponse(res, "properties fetched successfully", properties, HttpStatus.OK);
+  } catch (err) {
+    return errorResponse(res, "failed to get allProperties", HttpStatus.BAD_REQUEST, err.message);
+  }
+};
 
-
-const getPropertyByIdController= async (req,res) =>{
-try{
-    const property = await PS.getPropertyById(req.params.id)
-    res.status(200).json({message : "property fetched sucessfuly" ,data :property})
-
-}   
-catch(err){
-    res.status(404).json({message : err.message})
-}
-}
-
+const getPropertyByIdController = async (req, res) => {
+  try {
+    const property = await PS.getPropertyById(req.params.id);
+    return successResponse(res, "property fetched successfully", property, HttpStatus.OK);
+  } catch (err) {
+    return errorResponse(res, err.message, HttpStatus.NOT_FOUND);
+  }
+};
 
 const createPropertyController = async (req, res) => {
   try {
-    const property = await PS.createProperty(req.body);
-    res.status(201).json({
-      message: "Property created successfully",
-      data: property,
-    });
+    const property = await PS.createProperty(req.body, req.files);
+    return successResponse(res, "Property created successfully", property, HttpStatus.CREATED);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    return errorResponse(res, err.message, HttpStatus.BAD_REQUEST);
   }
 };
+
+
 
 const updatePropertyController = async (req, res) => {
   try {
     const property = await PS.updateProperty(req.params.id, req.body);
-    res.status(200).json({
-      message: "Property updated successfully",
-      data: property,
-    });
+    return successResponse(res, "Property updated successfully", property, HttpStatus.OK);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    return errorResponse(res, err.message, HttpStatus.BAD_REQUEST);
   }
 };
-
 
 const deletePropertyController = async (req, res) => {
   try {
     const result = await PS.deleteProperty(req.params.id);
-    res.status(200).json(result);
+    return successResponse(res, "Property deleted successfully", result, HttpStatus.OK);
   } catch (err) {
-    res.status(404).json({ message: err.message });
+    return errorResponse(res, err.message, HttpStatus.NOT_FOUND);
   }
 };
 
+const uploadImagesController = async (req, res) => {
+  try {
+    const property = await PS.uploadImages(req.params.id, req.files);
+    return successResponse(res, "Image uploaded successfully", property, HttpStatus.OK);
+  } catch (err) {
+    return errorResponse(res, err.message, HttpStatus.BAD_REQUEST);
+  }
+};
+
+const replaceImagesController = async (req, res) => {
+  try {
+    const property = await PS.replaceImages(req.params.id, req.files);
+    return successResponse(res, "Images replaced successfully", property, HttpStatus.OK);
+  } catch (err) {
+    return errorResponse(res, err.message, HttpStatus.BAD_REQUEST);
+  }
+};
+
+const deleteImageController = async (req, res) => {
+  try {
+    const property = await PS.deleteImage(req.params.id, req.body.imageUrl);
+    return successResponse(res, "Image deleted successfully", property, HttpStatus.OK);
+  } catch (err) {
+    return errorResponse(res, err.message, HttpStatus.BAD_REQUEST);
+  }
+};
 
 export {
   getAllPropertiesController,
@@ -63,4 +84,7 @@ export {
   createPropertyController,
   updatePropertyController,
   deletePropertyController,
+  uploadImagesController,
+  replaceImagesController,
+  deleteImageController
 };

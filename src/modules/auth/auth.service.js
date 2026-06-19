@@ -3,7 +3,8 @@ import { Usermodel } from "../../DB/models/auth.model.js";
 import CryptoJS from "crypto-js";
 import { generateAccessToken, generateRefreshToken } from "../../common/utils/jwt.js";
 import Token from "../../DB/models/token.model.js";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
+import { sendEmail } from "../../services/sendEmail.js";
 const register = async (data) => {
   const { name, email, password, phone, confirmPassword } = data;
 
@@ -26,6 +27,15 @@ const register = async (data) => {
     password: hashedPassword,
   });
 
+  const token = jwt.sign(
+  { id: user._id.toString() },
+  process.env.EMAIL_SECRET,
+  { expiresIn: "1h" }
+);
+
+
+    await sendEmail(user.email, token);
+
   return {
     message: "user created successfully",
     user,
@@ -40,13 +50,23 @@ const login = async (data) => {
     throw new Error("user doesnt exists must be register");
   }
 
-  const isPasswordMatched = await bcrypt.compare(password, user.password);
+  if (user.isConfirmEmail === false || !user.isConfirmEmail) {
+    throw new Error("please verify your email frist ");
+}
+console.log("Password from request:", password);
+console.log("Password from DB:", user.password);
+const isPasswordMatched = bcrypt.compareSync(
+  password.trim(),
+  user.password
+);
     
   if (!isPasswordMatched) {
     const error = new Error("wrong password");
     error.status = 401;
     throw error;
   }
+
+  console.log("Matched:", isPasswordMatched);
 
   const payload = {
     id: user._id,
@@ -105,9 +125,40 @@ const refreshToken =async (token)=>{
 
 }
 
+
+
 const logout = async (token) => {
   await Token.deleteOne({ token });
   return { message: "logged out successfully" };
 };
 
-export { register, login, refreshToken, logout };
+const verifyEmail = async (token) => {
+  try {
+    const decoded = jwt.verify(token, process.env.EMAIL_SECRET);
+
+    const user = await Usermodel.findById(decoded.id);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    if (user.isConfirmEmail) {
+      return { message: "Email already verified" };
+    }
+
+    user.isConfirmEmail = true;
+    await user.save();
+
+    return { message: "Email verified successfully" };
+
+  } catch (err) {
+    console.log("VERIFY ERROR:", err.message);
+
+    if (err.name === "TokenExpiredError") {
+      throw new Error("Verification link expired, please resend email");
+    }
+
+    throw err;
+  }
+};
+export { register, login, refreshToken, logout,verifyEmail };
