@@ -115,7 +115,7 @@ export const deleteClient = async (req, res) => {
       });
     }
 
-    await userPlanModel.findByIdAndDelete(id);
+    await clientModel.findByIdAndDelete(id);
 
     return res.status(200).json({
       message: "Client deleted successfully",
