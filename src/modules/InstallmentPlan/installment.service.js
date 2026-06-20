@@ -10,7 +10,7 @@ export const createPlan = async (data) => {
 
 
 export const getAllPlans = async () => {
-  const plans = await installMentPlanModel.find();
+  const plans = await installMentPlanModel.find({ isActive: true });
   return plans;
 };
 

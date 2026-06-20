@@ -15,8 +15,8 @@ const Createinvoice = async (data) => {
   } = data;
 
   // 1. user
-  const userExist = await clientModel.findById(customer_id);
-  if (!userExist) throw new Error("user is notExist");
+  const client = await clientModel.findById(customer_id);
+  if (!client) throw new Error("client is notExist");
 
   // 2. property
   const property = await PropertyModel.findById(property_id);
@@ -71,7 +71,7 @@ const Createinvoice = async (data) => {
   const invoice = await invoiceModel.create({
     invoiceNumber: `INV-${Date.now()}`,
 
-    customer_id: userExist._id,
+    customer_id: client._id,
     property_id,
 
     paymentType,
