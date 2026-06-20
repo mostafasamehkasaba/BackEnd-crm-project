@@ -4,7 +4,7 @@ import CryptoJS from "crypto-js";
 import { generateAccessToken, generateRefreshToken } from "../../common/utils/jwt.js";
 import Token from "../../DB/models/token.model.js";
 import jwt from "jsonwebtoken";
-import { sendEmail } from "../../services/sendEmail.js";
+import { sendEmail } from "../../services/Sendemail.js";
 const register = async (data) => {
   const { name, email, password, phone, confirmPassword } = data;
 
