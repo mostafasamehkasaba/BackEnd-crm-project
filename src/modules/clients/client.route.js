@@ -9,11 +9,11 @@ import {
   getDashboardStats,
   getDebtClients,
   getPaidClients,
-} from "./user.controller.js";
+} from "./client.controller.js";
 
 const router = Router();
 
-router.post("/addclient", auth, adminOnly, createClient);
+router.post("/addclient", createClient);
 router.get("/getAllClients", auth, adminOnly, getAllClients);
 router.get("/dashboardstates", auth, adminOnly, getDashboardStats);
 router.get("/debt", auth, adminOnly, getDebtClients);
