@@ -19,8 +19,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", userRouter);          
-app.use("/api/properties", propertyRouter); 
-app.use("/api/clients", clientRouter);
+app.use("/api/propertie", propertyRouter); 
+app.use("/api/client", clientRouter);
 app.use("/api/category", categoryRouter);
 app.use("/api/invoice", invoiceRouter);
 app.use("/api/installmentPlan", InstallmentRouter);
