@@ -1,10 +1,10 @@
-import { userPlanModel } from "../../DB/models/user.model.js";
+import { clientModel } from "../../DB/models/user.model.js";
 
 export const createClient = async (body) => {
   const { user_id, property_id, totalPrice, downPayment, notes, installments } =
     body;
 
-  const client = await userPlanModel.create({
+  const client = await clientModel.create({
     user_id,
     property_id,
     totalPrice,
@@ -16,7 +16,7 @@ export const createClient = async (body) => {
   return client;
 };
 export const getAllClients = async (page, limit) => {
-  const clients = await userPlanModel
+  const clients = await clientModel
     .find()
     .populate("user_id", "name email phone")
     .populate("property_id", "title type price")
@@ -46,7 +46,7 @@ export const getAllClients = async (page, limit) => {
   return result;
 };
 export const getDebtClients = async () => {
-  const clients = await userPlanModel
+  const clients = await clientModel
     .find({
       "installments.status": "PENDING",
     })
@@ -57,7 +57,7 @@ export const getDebtClients = async () => {
 };
 
 export const getPaidClients = async () => {
-  const clients = await userPlanModel
+  const clients = await clientModel
     .find({
       "installments.status": "PAID",
     })
@@ -68,13 +68,13 @@ export const getPaidClients = async () => {
 };
 
 export const getDashboardStats = async () => {
-  const totalClients = await userPlanModel.countDocuments();
+  const totalClients = await clientModel.countDocuments();
 
-  const debtClients = await userPlanModel.countDocuments({
+  const debtClients = await clientModel.countDocuments({
     "installments.status": "PENDING",
   });
 
-  const sales = await userPlanModel.aggregate([
+  const sales = await clientModel.aggregate([
     { $unwind: "$installments" },
     { $match: { "installments.status": "PAID" } },
     {
@@ -92,11 +92,11 @@ export const getDashboardStats = async () => {
   };
 };
 export const deleteClient = async (id) => {
-  const client = await userPlanModel.findById(id);
+  const client = await clientModel.findById(id);
 
   if (!client) {
     throw new Error("Client not found");
   }
 
-  return await userPlanModel.findByIdAndDelete(id);
+  return await clientModel.findByIdAndDelete(id);
 };

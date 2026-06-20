@@ -3,7 +3,7 @@ dotenv.config();
 import express from "express";
 import userRouter from "./src/modules/auth/auth.route.js";
 import propertyRouter from "./src/modules/property/property.route.js";
-import clientRouter from "./src/modules/clients/user.route.js";
+import clientRouter from "./src/modules/clients/client.route.js";
 import categoryRouter from "./src/modules/category/category.route.js"
 import invoiceRouter  from "./src/modules/invoices/invoice.route.js"
 import InstallmentRouter from "./src/modules/InstallmentPlan/installment.route.js"
