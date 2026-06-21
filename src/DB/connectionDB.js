@@ -1,21 +1,16 @@
 import mongoose from "mongoose";
 
-let isConnected = false;
-
 export const DBconnection = async () => {
-  if (isConnected) {
+  if (mongoose.connection.readyState === 1) {
     console.log("Using existing DB connection ✅");
     return;
   }
 
   try {
-    await mongoose.connect(process.env.MONGODB_URL, {
-      serverSelectionTimeoutMS: 10000,
-      socketTimeoutMS: 45000,
-    });
-    isConnected = true;
+    await mongoose.connect(process.env.MONGODB_URL);
     console.log("Database connected ✅");
   } catch (err) {
     console.log("DB Error", err);
+    throw err;
   }
 };
