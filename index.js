@@ -12,6 +12,12 @@ import paymentRouter from "./src/modules/payment/payment.route.js";
 
 const app = express();
 
+
+app.use(async (req, res, next) => {
+  await DBconnection();
+  next();
+});
+
 // payment 
 app.use(
   "/api/payments/webhook",
@@ -21,10 +27,6 @@ app.use(
 app.use(express.json());
 
 // ✅ اتصل بالـ DB قبل أي request
-app.use(async (req, res, next) => {
-  await DBconnection();
-  next();
-});
 
 
 
