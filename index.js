@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
+import cors from "cors";
 import { DBconnection } from "./src/DB/connectionDB.js";
 import userRouter from "./src/modules/auth/auth.route.js";
 import propertyRouter from "./src/modules/property/property.route.js";
@@ -12,27 +13,29 @@ import paymentRouter from "./src/modules/payment/payment.route.js";
 
 const app = express();
 
+// ✅ الأول دايماً
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
 
+// ✅ DB
 app.use(async (req, res, next) => {
   await DBconnection();
   next();
 });
 
-// payment 
+// ✅ Webhook قبل express.json()
 app.use(
   "/api/payments/webhook",
-  express.raw({ type: "application/json" }),  // raw bytes
-   paymentRouter
+  express.raw({ type: "application/json" }),
+  paymentRouter
 );
+
 app.use(express.json());
 
-// ✅ اتصل بالـ DB قبل أي request
-
-
-
-app.get("/", (req, res) => {
-  res.send("test");
-});
+app.get("/", (req, res) => res.send("test"));
 
 app.use("/api/auth", userRouter);
 app.use("/api/properties", propertyRouter);
