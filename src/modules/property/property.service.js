@@ -159,4 +159,6 @@ const deleteImage = async (id, imageUrl) => {
   return property;
 };
 
+
+
 export { getAllproperites, getPropertyById, createProperty, updateProperty, deleteProperty, uploadImages,deleteImage };
