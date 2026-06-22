@@ -24,7 +24,8 @@ router.post(
   upload.array("images", 10),
   createPropertyController
 );
-router.patch("/:id", auth, adminOnly, updatePropertyController);
+// ✅ ضيف upload للـ PATCH
+router.patch("/:id", auth, adminOnly, upload.array("images", 10), updatePropertyController);
 router.delete("/:id", auth, adminOnly, deletePropertyController);
 
 

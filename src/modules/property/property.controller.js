@@ -35,7 +35,7 @@ const createPropertyController = async (req, res) => {
 
 const updatePropertyController = async (req, res) => {
   try {
-    const property = await PS.updateProperty(req.params.id, req.body);
+    const property = await PS.updateProperty(req.params.id, req.body,req.files);
     return successResponse(res, "Property updated successfully", property, HttpStatus.OK);
   } catch (err) {
     return errorResponse(res, err.message, HttpStatus.BAD_REQUEST);
