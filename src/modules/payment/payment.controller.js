@@ -21,6 +21,7 @@ export const createCheckoutSessionController = async(req,res) =>{
 
 
 export const webhookController = async(req,res)=>{
+  console.log("🔥 STRIPE WEBHOOK HIT");
     const signature = req.headers["stripe-signature"];
     try{
         const result = await PaymentService.handleWebhook(req.body , signature);

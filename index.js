@@ -27,12 +27,11 @@ app.use(async (req, res, next) => {
 });
 
 // ✅ Webhook قبل express.json()
-app.use(
+app.post(
   "/api/payments/webhook",
   express.raw({ type: "application/json" }),
-  paymentRouter
+  webhookController
 );
-
 app.use(express.json());
 
 app.get("/", (req, res) => res.send("test"));
