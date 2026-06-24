@@ -132,7 +132,12 @@ const Createinvoice = async (data) => {
 export const getAllInvoices = async () => {
   const invoices = await invoiceModel
     .find()
-    .populate("customer_id")
+    .populate({
+      path: "customer_id",
+      populate: {
+        path: "user_id",
+      },
+    })
     .populate("property_id")
     .populate("installmentPlan_id");
 
