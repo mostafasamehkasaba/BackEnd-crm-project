@@ -11,14 +11,14 @@ const Createinvoice = async (data) => {
     basePrice,
     discount = 0,
     tax = 0,
-    paymentType
+    paymentType,
   } = data;
 
-  // 1. user
+  // 1. Client
   const client = await clientModel.findById(customer_id);
-  if (!client) throw new Error("client is notExist");
+  if (!client) throw new Error("Client not found");
 
-  // 2. property
+  // 2. Property
   const property = await PropertyModel.findById(property_id);
   if (!property) throw new Error("Property not found");
 
@@ -26,7 +26,7 @@ const Createinvoice = async (data) => {
     throw new Error("Property is already sold or rented");
   }
 
-  // 3. calculations
+  // 3. Calculations
   const totalAmount = basePrice - discount + tax;
 
   let paidAmount = 0;
@@ -42,12 +42,21 @@ const Createinvoice = async (data) => {
   if (paymentType === "CASH") {
     paidAmount = totalAmount;
     remainingAmount = 0;
+    status = "PAID";
   }
 
   // INSTALLMENT
   if (paymentType === "INSTALLMENT") {
     const plan = await installMentPlanModel.findById(installmentPlan_id);
-    if (!plan) throw new Error("InstallmentPlan not found");
+
+    if (!plan) {
+      throw new Error("Installment plan not found");
+    }
+
+    // منع إضافة خطة جديدة لنفس العميل
+    if (client.installments.length > 0) {
+      throw new Error("Client already has installments");
+    }
 
     months = plan.months;
     downPaymentPercentage = plan.downPaymentPercentage;
@@ -58,16 +67,38 @@ const Createinvoice = async (data) => {
     remainingAmount = totalAmount - downPayment;
 
     monthlyAmount = remainingAmount / months;
+
+    status = paidAmount > 0 ? "PARTIAL" : "UNPAID";
+
+    // إنشاء الأقساط
+    const installments = [];
+
+    const currentDate = new Date();
+
+    for (let i = 0; i < months; i++) {
+      const dueDate = new Date(currentDate);
+
+      dueDate.setMonth(currentDate.getMonth() + i + 1);
+
+      installments.push({
+        amount: monthlyAmount,
+        dueDate,
+        status: "PENDING",
+      });
+    }
+
+    // تحديث العميل
+    client.installments = installments;
+    client.totalPrice = totalAmount;
+    client.downPayment = downPayment;
+
+    // لو ضفت installmentPlan_id داخل الـ schema
+    // client.installmentPlan_id = installmentPlan_id;
+
+    await client.save();
   }
 
-  // status
-  if (remainingAmount === 0) {
-    status = "PAID";
-  } else if (paidAmount > 0) {
-    status = "PARTIAL";
-  }
-
-  // 4. create invoice
+  // إنشاء الفاتورة
   const invoice = await invoiceModel.create({
     invoiceNumber: `INV-${Date.now()}`,
 
@@ -89,31 +120,15 @@ const Createinvoice = async (data) => {
     downPaymentPercentage,
     monthlyAmount,
 
-    status
+    status,
   });
 
-  
-  if (paymentType === "INSTALLMENT") {
-    const installments = Array.from({ length: months }, (_, i) => ({
-      amount: monthlyAmount,
-      dueDate: new Date(Date.now() + (i + 1) * 30 * 24 * 60 * 60 * 1000),
-      status: "PENDING",
-    }));
-
-    await clientModel.findByIdAndUpdate(customer_id, {
-      installments,
-      downPayment: paidAmount,
-    });
-  }
-
-  // ✅ تحديث حالة العقار
-  await PropertyModel.findByIdAndUpdate(property_id, { status: "sold" });
+  // تحديث حالة العقار
+  property.status = "SOLD";
+  await property.save();
 
   return invoice;
 };
-
-
-
 export const getAllInvoices = async () => {
   const invoices = await invoiceModel
     .find()

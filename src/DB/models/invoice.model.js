@@ -10,7 +10,7 @@ const invoiceSchema = new Schema(
 
     customer_id: {
       type: Types.ObjectId,
-      ref: "client",
+      ref: "Client",
       required: true,
     },
 

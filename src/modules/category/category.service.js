@@ -2,7 +2,7 @@ import { categoryModel } from "../../DB/models/category.model.js";
 import slugify from "slugify";
 
 const createCategory = async (data) => {
-  const { name, filters } = data;
+  const { name, filiters } = data;
 
   const categoryExists = await categoryModel.findOne({ name });
   if (categoryExists) {
@@ -14,7 +14,7 @@ const createCategory = async (data) => {
   const newCategory = await categoryModel.create({
     name,
     slug,
-    filters: filters || []
+    filiters: filiters || []
   });
 
   return newCategory;
