@@ -9,7 +9,7 @@ import {
   getDashboardStats,
   getDebtClients,
   getPaidClients,
-} from "./user.controller.js";
+} from "./client.controller.js";
 
 const router = Router();
 

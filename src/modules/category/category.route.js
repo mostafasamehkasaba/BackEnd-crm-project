@@ -3,9 +3,8 @@ import * as CC from "./category.controller.js";
 
 const router = Router();
 
-router.route("/")
-  .post(CC.createCategoryController)
-  .get(CC.getAllCategoriesController);
+router.get("/",CC.getAllCategoriesController)
+router.post("/addcategory",CC.createCategoryController)
 
 router.route("/:id")
   .get(CC.getCategoryByIdController)

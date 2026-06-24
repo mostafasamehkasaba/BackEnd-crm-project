@@ -92,8 +92,27 @@ const Createinvoice = async (data) => {
     status
   });
 
+  
+  if (paymentType === "INSTALLMENT") {
+    const installments = Array.from({ length: months }, (_, i) => ({
+      amount: monthlyAmount,
+      dueDate: new Date(Date.now() + (i + 1) * 30 * 24 * 60 * 60 * 1000),
+      status: "PENDING",
+    }));
+
+    await clientModel.findByIdAndUpdate(customer_id, {
+      installments,
+      downPayment: paidAmount,
+    });
+  }
+
+  // ✅ تحديث حالة العقار
+  await PropertyModel.findByIdAndUpdate(property_id, { status: "sold" });
+
   return invoice;
 };
+
+
 
 export const getAllInvoices = async () => {
   const invoices = await invoiceModel

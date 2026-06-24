@@ -10,7 +10,7 @@ const invoiceSchema = new Schema(
 
     customer_id: {
       type: Types.ObjectId,
-      ref: "User",
+      ref: "client",
       required: true,
     },
 
@@ -32,7 +32,16 @@ const invoiceSchema = new Schema(
       ref: "InstallmentPlan",
       default: null,
     },
-
+    //  new to invoiceOnly
+     parentInvoice_id: {
+      type: Types.ObjectId,
+      ref: "Invoice",
+      default: null,
+    },
+      installment_id: {
+      type: Types.ObjectId,
+      default: null,
+    },
     // Snapshot من خطة التقسيط
     months: Number,
 
