@@ -147,7 +147,12 @@ export const getAllInvoices = async () => {
 export const getInvoiceById = async (id) => {
   const invoice = await invoiceModel
     .findById(id)
-    .populate("customer_id")
+     .populate({
+      path: "customer_id",
+      populate: {
+        path: "user_id",
+      },
+    })
     .populate("property_id")
     .populate("installmentPlan_id");
 
