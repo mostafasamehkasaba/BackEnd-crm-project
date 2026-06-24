@@ -124,7 +124,7 @@ const Createinvoice = async (data) => {
   });
 
   // تحديث حالة العقار
-  property.status = "SOLD";
+  property.status = "sold";
   await property.save();
 
   return invoice;
