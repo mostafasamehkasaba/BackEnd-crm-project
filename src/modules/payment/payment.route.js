@@ -11,7 +11,7 @@ import adminOnly  from "../../common/middleware/admin.middleware.js";
 const router = express.Router();
 
 // Webhook - بدون auth لأن Stripe هو اللي بيبعته
-router.post("/webhook", webhookController);
+// router.post("/webhook", webhookController);
 
 // Checkout Session - العميل بيعملها
 router.post("/checkout", auth, createCheckoutSessionController);

@@ -53,9 +53,9 @@ export const createCheckoutSession = async (data) => {
 
 // 2. Stripe Webhook
 export const handleWebhook = async (rawBody, signature) => {
+    console.log("Webhook called");
   let event;
 
-  // التحقق من إن الـ Webhook جاي من Stripe فعلاً
   try {
     event = stripe.webhooks.constructEvent(
       rawBody,
@@ -68,8 +68,11 @@ export const handleWebhook = async (rawBody, signature) => {
 
   // لو الدفع نجح
   if (event.type === "checkout.session.completed") {
+      console.log("checkout.session.completed");
     const session = event.data.object;
+    
     await processSuccessfulPayment(session);
+
   }
 
   return { received: true };
