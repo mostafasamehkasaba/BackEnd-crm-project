@@ -13,7 +13,7 @@ import {
 
 const router = Router();
 
-router.post("/addclient", createClient);
+router.post("/addclient", auth, adminOnly, createClient);
 router.get("/getAllClients", auth, adminOnly, getAllClients);
 router.get("/dashboardstates", auth, adminOnly, getDashboardStats);
 router.get("/debt", auth, adminOnly, getDebtClients);
