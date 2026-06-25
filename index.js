@@ -14,25 +14,24 @@ import paymentRouter from "./src/modules/payment/payment.route.js";
 import { webhookController } from "./src/modules/payment/payment.controller.js";
 const app = express();
 
-// ✅ الأول دايماً
 app.use(cors({
   origin: "*",
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
-// ✅ DB
 app.use(async (req, res, next) => {
   await DBconnection();
   next();
 });
 
-// ✅ Webhook قبل express.json()
 app.post(
   "/api/payments/webhook",
   express.raw({ type: "application/json" }),
   webhookController
 );
+
+
 app.use(express.json());
 
 app.get("/", (req, res) => res.send("test"));
