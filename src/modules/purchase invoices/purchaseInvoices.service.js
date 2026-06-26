@@ -11,16 +11,21 @@ export const getAllPurchaseInvoices = async (page, limit) => {
     .find()
     .sort({ createdAt: -1 })
     .skip(skip)
-    .limit(limit);
+    .limit(limit)
+    .lean();
 
+  const purchaseInvoicesWithRemaining = purchaseInvoices.map((invoice) => ({
+    ...invoice,
+    remainingAmount: invoice.totalAmount - invoice.paidAmount,
+  }));
   const totalPurchaseInvoices = await purchaseInvoiceModel.countDocuments();
 
   return {
     currentPage: page,
     totalPages: Math.ceil(totalPurchaseInvoices / limit),
     totalPurchaseInvoices,
-    count: purchaseInvoices.length,
-    purchaseInvoices,
+    count: purchaseInvoicesWithRemaining.length,
+    purchaseInvoices: purchaseInvoicesWithRemaining,
   };
 };
 
