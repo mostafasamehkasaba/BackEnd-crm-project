@@ -1,18 +1,18 @@
 import {CampanyInfoModel} from "../../DB/models/settings.model.js"
 
 export const getCompanyInfo = async () => {
-  return await CompanyInfo.findOne();
+  return await CampanyInfoModel.find()
 };
 
 
 export const updateCompanyInfo = async (data) => {
-  const existingCompany = await CompanyInfo.findOne();
+  const existingCompany = await CampanyInfoModel.findOne();
 
   if (existingCompany) {
-    return await CompanyInfo.findByIdAndUpdate(existingCompany._id, data, {
+    return await CampanyInfoModel.findByIdAndUpdate(existingCompany._id, data, {
       new: true,
     });
   } else {
-    return await CompanyInfo.create(data);
+    return await CampanyInfoModel.create(data);
   }
 };

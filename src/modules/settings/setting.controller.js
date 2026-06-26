@@ -3,9 +3,13 @@ import * as companyService from './setting.service.js';
 export const getCompany = async (req, res) => {
   try {
     const company = await companyService.getCompanyInfo();
+    
+    // لو الـ company بـ null أو undefined، هيرجع أوبجكت فاضي فوراً مع حالة 200
     return res.status(200).json(company || {});
   } catch (error) {
-    return res.status(500).json({ error: 'حدث خطأ أثناء جلب بيانات الشركة' });
+    console.error("Error in getCompany:", error);
+    // لو دخل هنا يبقى في مشكلة حقيقية في الاتصال بالداتا بيس نفسها
+    return res.status(500).json({ error: 'مشكلة في الاتصال بقاعدة البيانات' });
   }
 };
 
