@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const CompanyInfoSchema = new mongoose.Schema({
-    name :{
+    companyName :{
         type : String,
         required : true,
     },
