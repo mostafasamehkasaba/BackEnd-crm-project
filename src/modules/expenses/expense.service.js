@@ -23,6 +23,15 @@ export const getAllExpenses = async (page, limit) => {
     expenses,
   };
 };
+export const getExpenseById = async (id) => {
+  const expense = await expenseModel.findById(id);
+
+  if (!expense) {
+    throw new Error("Expense not found");
+  }
+
+  return expense;
+};
 export const updateExpense = async (id, data) => {
   const expense = await expenseModel.findByIdAndUpdate(id, data, {
     new: true,

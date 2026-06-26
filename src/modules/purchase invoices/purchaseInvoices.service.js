@@ -51,3 +51,12 @@ export const deletePurchaseInvoices = async (id) => {
 
   return invoice;
 };
+export const getPurchaseInvoiceById = async (id) => {
+  const invoice = await purchaseInvoiceModel.findById(id);
+
+  if (!invoice) {
+    throw new Error("Purchase invoice not found");
+  }
+
+  return invoice;
+};
