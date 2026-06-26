@@ -11,7 +11,7 @@ const expenseSchema = new Schema(
       type: Date,
       default: Date.now,
     },
-    supplierName: {
+    description: {
       type: String,
       required: true,
       trim: true,
@@ -28,7 +28,17 @@ const expenseSchema = new Schema(
       required: true,
       min: 0,
     },
+    wallet: {
+      type: String,
+      required: true,
+      trim: true,
+    },
 
+    paymentMethod: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     status: {
       type: String,
       enum: ["مدفوع", "معلق"],
