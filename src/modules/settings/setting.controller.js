@@ -1,3 +1,4 @@
+import configureCloudinary from '../../config/cloudinary.js';
 import * as companyService from './setting.service.js';
 import { v2 as cloudinary } from 'cloudinary';
 
@@ -22,8 +23,10 @@ export const updateCompany = async (req, res) => {
 
     // ✅ نضيف الصورة بس لو موجودة
     if (req.file) {
+
+      const cloudinaryInstance = configureCloudinary();
       const uploadResult = await new Promise((resolve, reject) => {
-        cloudinary.uploader.upload_stream(
+        cloudinaryInstance.uploader.upload_stream(
           { folder: "company_logos" },
           (error, result) => {
             if (error) reject(error);
