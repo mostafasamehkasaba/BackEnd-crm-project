@@ -46,5 +46,5 @@ app.use("/api/installmentPlan", InstallmentRouter);
 app.use("/api/expenses", expensesRouter);
 app.use("/api/payments", paymentRouter);
 app.use("/api/purchaseInvoices", purchaseRouter);
-
+app.use('/api/company', companyRoutes);
 export default app;
