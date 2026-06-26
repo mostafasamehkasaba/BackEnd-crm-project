@@ -12,7 +12,6 @@ export const getCompany = async (req, res) => {
 
 export const updateCompany = async (req, res) => {
   try {
-    // ✅ كله بـ companyName زي الـ model
     const { companyName, email, taxNumber, commercialRegister, mainActivity, phoneNumber, address } = req.body;
 
     if (!companyName || !email) {
@@ -20,11 +19,19 @@ export const updateCompany = async (req, res) => {
     }
 
     let logoUrl;
+
+    // ✅ نضيف الصورة بس لو موجودة
     if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "company_logos",
+      const uploadResult = await new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream(
+          { folder: "company_logos" },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        ).end(req.file.buffer);
       });
-      logoUrl = result.secure_url;
+      logoUrl = uploadResult.secure_url;
     }
 
     const dataToSave = {
@@ -44,6 +51,7 @@ export const updateCompany = async (req, res) => {
       message: 'تم حفظ الإعدادات بنجاح',
       data: updatedData
     });
+
   } catch (error) {
     console.error("updateCompany error:", error);
     return res.status(500).json({ error: error.message || 'حدث خطأ أثناء حفظ البيانات' });
