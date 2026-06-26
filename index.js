@@ -14,6 +14,9 @@ import expensesRouter from "./src/modules/expenses/expense.routes.js";
 import paymentRouter from "./src/modules/payment/payment.route.js";
 import webhookController from "./src/modules/payment/payment.route.js"
 import purchaseRouter from "./src/modules/purchase invoices/purchaseInvoices.route.js"
+import companyRoutes from './src/modules/settings/setting.route.js';
+
+
 const app = express();
 
 // ✅ الأول دايماً
@@ -47,4 +50,6 @@ app.use("/api/expenses", expensesRouter);
 app.use("/api/payments", paymentRouter);
 app.use("/api/purchaseInvoices", purchaseRouter);
 app.use('/api/company', companyRoutes);
+
+
 export default app;
