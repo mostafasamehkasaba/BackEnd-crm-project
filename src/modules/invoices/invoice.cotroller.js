@@ -77,7 +77,7 @@ export const deleteInvoiceController = async (req, res) => {
 
 export const getInvoiceByCustomerIdController = async (req, res) => {
   try {
-    const invoice = await getInvoiceByCustomerId(req.params.customer_id);
+    const invoice = await IS.getInvoiceByCustomerId(req.params.customer_id);
     return successResponse(res, "Invoice fetched successfully", invoice, HttpStatus.OK);
   } catch (err) {
     return errorResponse(res, err.message, HttpStatus.BAD_REQUEST);

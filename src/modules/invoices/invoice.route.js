@@ -10,9 +10,9 @@ router.get("/", IC.getAllInvoicesController);
 router.get("/:id", IC.getInvoiceByIdController);
 
 router.patch("/:id", IC.updateInvoiceController);
+router.get("/customer/:customer_id", IC.getInvoiceByCustomerIdController);
 
 router.delete("/:id", IC.deleteInvoiceController);
-router.get("/customer/:customer_id", IC.getInvoiceByCustomerIdController);
 
 
 
