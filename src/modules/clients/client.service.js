@@ -16,6 +16,7 @@ export const createClient = async (body) => {
   return client;
 };
 export const getAllClients = async (page, limit) => {
+  console.log("getAllClients called");
   const clients = await clientModel
     .find()
     .populate("user_id", "name email phone")
@@ -27,14 +28,19 @@ export const getAllClients = async (page, limit) => {
     const clientObj = client.toObject();
 
     // فك تشفير رقم التليفون
-    if (clientObj.user_id?.phone) {
-      const bytes = CryptoJS.AES.decrypt(
-        clientObj.user_id.phone,
-        process.env.PHONE_SECRET
-      );
+   if (clientObj.user_id?.phone) {
+  const bytes = CryptoJS.AES.decrypt(
+    clientObj.user_id.phone,
+    process.env.PHONE_SECRET
+  );
 
-      clientObj.user_id.phone = bytes.toString(CryptoJS.enc.Utf8);
-    }
+  const decryptedPhone = bytes.toString(CryptoJS.enc.Utf8);
+
+  console.log("Encrypted:", clientObj.user_id.phone);
+  console.log("Decrypted:", decryptedPhone);
+
+  clientObj.user_id.phone = decryptedPhone;
+}
 
     const installments = clientObj.installments || [];
 
