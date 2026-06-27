@@ -12,5 +12,8 @@ router.get("/:id", IC.getInvoiceByIdController);
 router.patch("/:id", IC.updateInvoiceController);
 
 router.delete("/:id", IC.deleteInvoiceController);
+router.get("/customer/:customer_id", IC.getInvoiceByCustomerIdController);
+
+
 
 export default router;

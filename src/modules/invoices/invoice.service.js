@@ -188,6 +188,14 @@ export const deleteInvoice = async (id) => {
 };
 
 
+
+export const getInvoiceByCustomerId = async (customerId) => {
+  const invoice = await invoiceModel.findOne({ customer_id: customerId });
+  if (!invoice) throw new Error("Invoice not found");
+  return invoice;
+};
+
+
 export {
     Createinvoice,
     
