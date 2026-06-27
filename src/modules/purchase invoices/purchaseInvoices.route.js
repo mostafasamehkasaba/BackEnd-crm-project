@@ -10,6 +10,7 @@ router.get("/", PI.getAllPurchaseInvoices);
 router.put("/:id", PI.updatePurchaseInvoice);
 
 router.delete("/:id", PI.deletePurchaseInvoice);
+router.get("/stats", PI.getPurchaseInvoicesStats);
 
 router.get("/:id", PI.getPurchaseInvoiceById);
 
