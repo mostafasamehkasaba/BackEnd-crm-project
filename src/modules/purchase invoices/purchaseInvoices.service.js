@@ -51,3 +51,39 @@ export const deletePurchaseInvoices = async (id) => {
 
   return invoice;
 };
+export const getPurchaseInvoiceById = async (id) => {
+  const invoice = await purchaseInvoiceModel.findById(id);
+
+  if (!invoice) {
+    throw new Error("Purchase invoice not found");
+  }
+
+  return invoice;
+};
+export const getPurchaseInvoicesStats = async () => {
+  const [stats] = await purchaseInvoiceModel.aggregate([
+    {
+      $group: {
+        _id: null,
+        totalAmount: { $sum: "$totalAmount" },
+        totalPaidAmount: { $sum: "$paidAmount" },
+        totalRemainingAmount: {
+          $sum: {
+            $subtract: ["$totalAmount", "$paidAmount"],
+          },
+        },
+      },
+    },
+    {
+      $unset: "_id",
+    },
+  ]);
+
+  return (
+    stats || {
+      totalAmount: 0,
+      totalPaidAmount: 0,
+      totalRemainingAmount: 0,
+    }
+  );
+};
