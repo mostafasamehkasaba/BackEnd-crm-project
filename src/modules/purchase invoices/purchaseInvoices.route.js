@@ -11,4 +11,6 @@ router.put("/:id", PI.updatePurchaseInvoice);
 
 router.delete("/:id", PI.deletePurchaseInvoice);
 
+router.get("/:id", PI.getPurchaseInvoiceById);
+
 export default router;

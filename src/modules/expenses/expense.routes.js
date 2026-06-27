@@ -12,4 +12,7 @@ router.put("/:id", Expenses.updateExpense);
 router.delete("/:id", Expenses.deleteExpense);
 
 router.get("/stats", Expenses.getExpensesStats);
+
+router.get("/:id", Expenses.getExpenseById);
+
 export default router;
