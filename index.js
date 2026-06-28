@@ -14,6 +14,7 @@ import expensesRouter from "./src/modules/expenses/expense.routes.js";
 import paymentRouter from "./src/modules/payment/payment.route.js";
 import webhookController from "./src/modules/payment/payment.route.js";
 import purchaseInvoicesController from "./src/modules/purchase invoices/purchaseInvoices.route.js";
+import userProfileController from "./src/modules/profile/userProfile.route.js";
 const app = express();
 
 // ✅ الأول دايماً
@@ -54,5 +55,6 @@ app.use("/api/installmentPlan", InstallmentRouter);
 app.use("/api/expenses", expensesRouter);
 app.use("/api/payments", paymentRouter);
 app.use("/api/purchaseInvoices", purchaseInvoicesController);
+app.use("/api/profile", userProfileController);
 
 export default app;

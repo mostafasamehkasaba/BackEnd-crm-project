@@ -16,10 +16,7 @@ const userSchema = new mongoose.Schema(
       unique: true,
       trim: true,
       lowercase: true,
-      match: [
-        /^\S+@\S+\.\S+$/,
-        "Please enter a valid email address",
-      ],
+      match: [/^\S+@\S+\.\S+$/, "Please enter a valid email address"],
     },
 
     phone: {
@@ -45,7 +42,29 @@ const userSchema = new mongoose.Schema(
       },
       default: "CLIENT",
     },
+    profileImage: {
+      secure_url: String,
+      public_id: String,
+    },
 
+    address: {
+      country: {
+        type: String,
+        trim: true,
+      },
+      city: {
+        type: String,
+        trim: true,
+      },
+      street: {
+        type: String,
+        trim: true,
+      },
+      building: {
+        type: String,
+        trim: true,
+      },
+    },
     isConfirmEmail: {
       type: Boolean,
       default: false,
@@ -53,7 +72,7 @@ const userSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export const Usermodel = mongoose.model("User", userSchema);
