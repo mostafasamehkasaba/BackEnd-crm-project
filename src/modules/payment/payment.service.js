@@ -144,9 +144,12 @@ const processSuccessfulPayment = async (session) => {
 // 4. جلب الدفعات
 export const getAllPayments = async () => {
   return await paymentModel
-    .find()
+     .find()
+    .populate({
+      path: "customer_id",
+      populate: { path: "user_id" } // ✅ بيجيب الـ User جوا الـ Client
+    })
     .populate("invoice_id")
-    .populate("customer_id")
     .populate("property_id");
 };
 
