@@ -22,7 +22,14 @@ export const getAllExpenses = async (req, res, next) => {
     ...result,
   });
 };
+export const getExpenseById = async (req, res, next) => {
+  const result = await expenseService.getExpenseById(req.params.id);
 
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+};
 export const updateExpense = async (req, res, next) => {
   const result = await expenseService.updateExpense(req.params.id, req.body);
 
