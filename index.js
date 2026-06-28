@@ -5,21 +5,18 @@ import cors from "cors";
 import { DBconnection } from "./src/DB/connectionDB.js";
 import userRouter from "./src/modules/auth/auth.route.js";
 import propertyRouter from "./src/modules/property/property.route.js";
-
 import clientRouter from "./src/modules/clients/client.route.js";
 import categoryRouter from "./src/modules/category/category.route.js";
 import invoiceRouter from "./src/modules/invoices/invoice.route.js";
 import InstallmentRouter from "./src/modules/InstallmentPlan/installment.route.js";
 import expensesRouter from "./src/modules/expenses/expense.routes.js";
 import paymentRouter from "./src/modules/payment/payment.route.js";
-import webhookController from "./src/modules/payment/payment.route.js"
-import purchaseRouter from "./src/modules/purchase invoices/purchaseInvoices.route.js"
+import { webhookController } from "./src/modules/payment/payment.controller.js"; // ✅ من الـ controller مش الـ route
+import purchaseRouter from "./src/modules/purchase invoices/purchaseInvoices.route.js";
 import companyRoutes from './src/modules/settings/setting.route.js';
-
 
 const app = express();
 
-// ✅ الأول دايماً
 app.use(cors({
   origin: "*",
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
@@ -31,13 +28,12 @@ app.use(async (req, res, next) => {
   next();
 });
 
+// ✅ الـ webhook لازم يكون قبل express.json()
 app.post(
   "/api/payments/webhook",
   express.raw({ type: "application/json" }),
-  webhookController,
+  webhookController
 );
-
-
 
 app.use(express.json());
 
@@ -51,6 +47,5 @@ app.use("/api/expenses", expensesRouter);
 app.use("/api/payments", paymentRouter);
 app.use("/api/purchaseInvoices", purchaseRouter);
 app.use('/api/company', companyRoutes);
-
 
 export default app;
