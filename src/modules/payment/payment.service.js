@@ -2,7 +2,7 @@ import Stripe from "stripe";
 import { paymentModel } from "../../DB/models/payment.model.js";
 import { invoiceModel } from "../../DB/models/invoice.model.js";
 import { clientModel } from "../../DB/models/clients.model.js";
-
+import {io} from "../../../index.js"
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // 1. إنشاء Checkout Session
@@ -139,6 +139,16 @@ const processSuccessfulPayment = async (session) => {
     remainingAmount: newRemainingAmount,
     status: newStatus,
   });
+
+  const notification = await createNotification({
+    type: "PAYMENT",
+    title: "تم استلام دفعة جديدة",
+    message: `تم دفع قسط بقيمة ${amount} ج.م بنجاح`,
+    amount,
+  });
+
+  // ✅ بعت الإشعار real-time لكل المتصلين
+  io.emit("newNotification", notification);
 };
 
 // 4. جلب الدفعات
