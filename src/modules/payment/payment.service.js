@@ -156,8 +156,11 @@ export const getAllPayments = async () => {
 export const getPaymentById = async (id) => {
   const payment = await paymentModel
     .findById(id)
+    .populate({
+      path: "customer_id",
+      populate: { path: "user_id" } // ✅ نفس الشيء هنا
+    })
     .populate("invoice_id")
-    .populate("customer_id")
     .populate("property_id");
 
   if (!payment) throw new Error("Payment not found");
