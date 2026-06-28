@@ -124,7 +124,7 @@ const Createinvoice = async (data) => {
   });
 
   // تحديث حالة العقار
-  property.status = "SOLD";
+  property.status = "sold";
   await property.save();
 
   return invoice;
@@ -132,7 +132,12 @@ const Createinvoice = async (data) => {
 export const getAllInvoices = async () => {
   const invoices = await invoiceModel
     .find()
-    .populate("customer_id")
+    .populate({
+      path: "customer_id",
+      populate: {
+        path: "user_id",
+      },
+    })
     .populate("property_id")
     .populate("installmentPlan_id");
 
@@ -142,7 +147,12 @@ export const getAllInvoices = async () => {
 export const getInvoiceById = async (id) => {
   const invoice = await invoiceModel
     .findById(id)
-    .populate("customer_id")
+     .populate({
+      path: "customer_id",
+      populate: {
+        path: "user_id",
+      },
+    })
     .populate("property_id")
     .populate("installmentPlan_id");
 
@@ -174,6 +184,14 @@ export const deleteInvoice = async (id) => {
     throw new Error("Invoice not found");
   }
 
+  return invoice;
+};
+
+
+
+export const getInvoiceByCustomerId = async (customerId) => {
+  const invoice = await invoiceModel.findOne({ customer_id: customerId });
+  if (!invoice) throw new Error("Invoice not found");
   return invoice;
 };
 

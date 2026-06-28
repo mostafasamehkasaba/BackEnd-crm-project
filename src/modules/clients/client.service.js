@@ -1,5 +1,5 @@
 import { clientModel } from "../../DB/models/user.model.js";
-
+import CryptoJS from "crypto-js";
 export const createClient = async (body) => {
   const { user_id, property_id, totalPrice, downPayment, notes, installments } =
     body;
@@ -16,25 +16,46 @@ export const createClient = async (body) => {
   return client;
 };
 export const getAllClients = async (page, limit) => {
+  console.log("getAllClients called");
   const clients = await clientModel
     .find()
     .populate("user_id", "name email phone")
     .populate("property_id", "title type price")
     .skip((page - 1) * limit)
     .limit(limit);
+
   const result = clients.map((client) => {
-    const installments = client.installments || [];
+    const clientObj = client.toObject();
+
+    // فك تشفير رقم التليفون
+   if (clientObj.user_id?.phone) {
+  const bytes = CryptoJS.AES.decrypt(
+    clientObj.user_id.phone,
+    process.env.PHONE_SECRET
+  );
+
+  const decryptedPhone = bytes.toString(CryptoJS.enc.Utf8);
+
+  console.log("Encrypted:", clientObj.user_id.phone);
+  console.log("Decrypted:", decryptedPhone);
+
+  clientObj.user_id.phone = decryptedPhone;
+}
+
+    const installments = clientObj.installments || [];
 
     const total = installments.length;
-
-    const paid = installments.filter((i) => i.status === "PAID").length;
+    const paid = installments.filter(
+      (i) => i.status === "PAID"
+    ).length;
 
     const pending = total - paid;
 
-    const percentage = total === 0 ? 0 : (paid / total) * 100;
+    const percentage =
+      total === 0 ? 0 : (paid / total) * 100;
 
     return {
-      ...client.toObject(),
+      ...clientObj,
       installmentInfo: {
         totalInstallments: total,
         paidInstallments: paid,
@@ -43,6 +64,7 @@ export const getAllClients = async (page, limit) => {
       },
     };
   });
+
   return result;
 };
 export const getDebtClients = async () => {

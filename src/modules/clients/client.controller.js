@@ -1,5 +1,5 @@
 import { clientModel } from "../../DB/models/clients.model.js";
-
+import CryptoJS from "crypto-js";
 export const createClient = async (req, res) => {
   try {
     const {
@@ -35,11 +35,27 @@ export const getAllClients = async (req, res) => {
     const clients = await clientModel
       .find()
       .populate("user_id", "name email phone")
-      .populate("property_id", "title type price ");
+      .populate("property_id", "title type price");
+
+    const result = clients.map((client) => {
+      const clientObj = client.toObject();
+
+      if (clientObj.user_id?.phone) {
+        const bytes = CryptoJS.AES.decrypt(
+          clientObj.user_id.phone,
+          process.env.PHONE_SECRET
+        );
+
+        clientObj.user_id.phone =
+          bytes.toString(CryptoJS.enc.Utf8);
+      }
+
+      return clientObj;
+    });
 
     res.status(200).json({
       message: "getAllClients success",
-      clients,
+      clients: result,
     });
   } catch (error) {
     res.status(500).json({

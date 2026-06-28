@@ -2,7 +2,7 @@ import Stripe from "stripe";
 import { paymentModel } from "../../DB/models/payment.model.js";
 import { invoiceModel } from "../../DB/models/invoice.model.js";
 import { clientModel } from "../../DB/models/clients.model.js";
-
+import {io} from "../../../index.js"
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // 1. إنشاء Checkout Session
@@ -53,9 +53,9 @@ export const createCheckoutSession = async (data) => {
 
 // 2. Stripe Webhook
 export const handleWebhook = async (rawBody, signature) => {
+    console.log("Webhook called");
   let event;
 
-  // التحقق من إن الـ Webhook جاي من Stripe فعلاً
   try {
     event = stripe.webhooks.constructEvent(
       rawBody,
@@ -68,8 +68,11 @@ export const handleWebhook = async (rawBody, signature) => {
 
   // لو الدفع نجح
   if (event.type === "checkout.session.completed") {
+      console.log("checkout.session.completed");
     const session = event.data.object;
+    
     await processSuccessfulPayment(session);
+
   }
 
   return { received: true };
@@ -136,22 +139,38 @@ const processSuccessfulPayment = async (session) => {
     remainingAmount: newRemainingAmount,
     status: newStatus,
   });
+
+  const notification = await createNotification({
+    type: "PAYMENT",
+    title: "تم استلام دفعة جديدة",
+    message: `تم دفع قسط بقيمة ${amount} ج.م بنجاح`,
+    amount,
+  });
+
+  // ✅ بعت الإشعار real-time لكل المتصلين
+  io.emit("newNotification", notification);
 };
 
 // 4. جلب الدفعات
 export const getAllPayments = async () => {
   return await paymentModel
-    .find()
+     .find()
+    .populate({
+      path: "customer_id",
+      populate: { path: "user_id" } // ✅ بيجيب الـ User جوا الـ Client
+    })
     .populate("invoice_id")
-    .populate("customer_id")
     .populate("property_id");
 };
 
 export const getPaymentById = async (id) => {
   const payment = await paymentModel
     .findById(id)
+    .populate({
+      path: "customer_id",
+      populate: { path: "user_id" } // ✅ نفس الشيء هنا
+    })
     .populate("invoice_id")
-    .populate("customer_id")
     .populate("property_id");
 
   if (!payment) throw new Error("Payment not found");
