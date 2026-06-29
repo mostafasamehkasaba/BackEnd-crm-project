@@ -1,10 +1,20 @@
 import bcrypt from "bcryptjs";
 import { Usermodel } from "../../DB/models/auth.model.js";
 import configureCloudinary from "../../config/cloudinary.js";
+import CryptoJS from "crypto-js";
 
 export const getProfile = async (userId) => {
   const user = await Usermodel.findById(userId).select("-password");
-  return { message: "Success", user };
+  const decryptedPhone = CryptoJS.AES.decrypt(user.phone, "phoneKey").toString(
+    CryptoJS.enc.Utf8,
+  );
+  return {
+    message: "Success",
+    user: {
+      ...user._doc,
+      phone: decryptedPhone,
+    },
+  };
 };
 
 export const updateProfile = async (userId, body) => {
