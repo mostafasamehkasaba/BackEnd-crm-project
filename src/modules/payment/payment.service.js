@@ -168,7 +168,7 @@ export const getPaymentById = async (id) => {
     .findById(id)
     .populate({
       path: "customer_id",
-      populate: { path: "user_id" } // ✅ نفس الشيء هنا
+      populate: { path: "user_id" }
     })
     .populate("invoice_id")
     .populate("property_id");
