@@ -19,6 +19,8 @@ import purchaseRouter from "./src/modules/purchase invoices/purchaseInvoices.rou
 import companyRoutes from "./src/modules/settings/setting.route.js";
 import notificationRouter from "./src/modules/notifications/notifications.route.js";
 import profileRouter from "./src/modules/profile/userProfile.route.js";
+import bookingRouter from "./src/modules/booking/booking.route.js";
+
 
 const app = express();
 const httpServer = createServer(app); // ✅
@@ -69,5 +71,6 @@ app.use("/api/purchaseInvoices", purchaseRouter);
 app.use("/api/company", companyRoutes);
 app.use("/api/notifications", notificationRouter);
 app.use("/api/profile", profileRouter);
+app.use("/api/bookings", bookingRouter);
 
 export default httpServer;

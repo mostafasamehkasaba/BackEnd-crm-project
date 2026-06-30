@@ -46,7 +46,7 @@ const propertySchema = new mongoose.Schema({
   }],
   status: {
     type: String,
-    enum: ["available", "sold", "rented"],
+    enum: ["available", "sold", "rented","booked"],
     default: "available",
   },
 }, { timestamps: true });
