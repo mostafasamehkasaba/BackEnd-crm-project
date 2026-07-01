@@ -165,7 +165,7 @@ const verifyEmail = async (token) => {
 
 export const getAllUsers = async () => {
   return await Usermodel.find(
-    { role: "USER" },
+    { role: "CLIENT" },
     "name email phone"
   );
 };

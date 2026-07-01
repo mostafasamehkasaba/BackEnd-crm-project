@@ -19,7 +19,7 @@ router.get("/admin-test", auth, adminOnly, (req, res) => {
   res.json({ message: "Welcome Admin!" })
 })
 
-router.get("/users", getAllUsers);
+router.get("/users", getUsers);;
 
 router.post("/logout", logoutController);
 
