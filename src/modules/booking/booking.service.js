@@ -18,8 +18,8 @@ export const createBooking = async (data) => {
     name,
     email,
     phone,
+    status
   });
-  property.status= "booked"
   await property.save()
 
 
@@ -51,6 +51,7 @@ export const updateBookingStatus = async (id, status) => {
 
 export const deleteBooking = async (id) => {
   const booking = await bookingModel.findByIdAndDelete(id);
+
   if (!booking) throw new Error("Booking not found");
   return booking;
 };
