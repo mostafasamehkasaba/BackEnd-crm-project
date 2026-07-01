@@ -5,6 +5,7 @@ import auth from "../../common/middleware/auth.middleware.js";
 const router = Router();
 
 router.get("/", auth, NC.getAllNotificationsController);
+router.post("/", auth, NC.createNotificationController);
 router.get("/unread-count", auth, NC.getUnreadCountController);
 router.patch("/:id/read", auth, NC.markAsReadController);
 router.patch("/mark-all-read", auth, NC.markAllAsReadController);
