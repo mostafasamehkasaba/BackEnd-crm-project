@@ -12,6 +12,21 @@ export const getAllNotificationsController = async (req, res) => {
   }
 };
 
+export const createNotificationController = async (req, res) => {
+  try {
+    const notification = await NS.createNotification(req.body);
+
+    return successResponse(
+      res,
+      "Notification created",
+      notification,
+      HttpStatus.CREATED
+    );
+  } catch (err) {
+    return errorResponse(res, err.message, HttpStatus.BAD_REQUEST);
+  }
+};
+
 export const markAsReadController = async (req, res) => {
   try {
     const notification = await NS.markAsRead(req.params.id);
