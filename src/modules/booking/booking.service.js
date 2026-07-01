@@ -1,6 +1,7 @@
 // modules/booking/booking.service.js
 import { bookingModel } from "../../DB/models/booking.model.js";
 import { PropertyModel } from "../../DB/models/property.model.js";
+import { createNotification } from "../notifications/notification.service.js";
 
 // modules/booking/booking.service.js
 
@@ -25,6 +26,14 @@ export const createBooking = async (data) => {
   property.status = "booked";
   await property.save();
 
+
+  const notification = await createNotification({
+  title: "حجز جديد",
+  message: `تم إنشاء حجز جديد بواسطة ${booking.name}`,
+  type: "BOOKING",
+});
+
+io.emit("new-notification", notification);
   return booking;
 };
 
