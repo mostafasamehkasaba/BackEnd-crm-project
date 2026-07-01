@@ -1,4 +1,5 @@
 // modules/booking/booking.service.js
+import { io } from "../../../index.js";
 import { bookingModel } from "../../DB/models/booking.model.js";
 import { PropertyModel } from "../../DB/models/property.model.js";
 import { createNotification } from "../notifications/notification.service.js";
