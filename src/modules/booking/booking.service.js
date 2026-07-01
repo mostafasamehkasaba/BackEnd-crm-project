@@ -51,7 +51,7 @@ export const getBookingById = async (id) => {
 export const updateBookingStatus = async (id, status) => {
   const booking = await bookingModel.findByIdAndUpdate(
     id,
-    { status },
+    { status , name ,email},
     { new: true }
   );
   if (!booking) throw new Error("Booking not found");
