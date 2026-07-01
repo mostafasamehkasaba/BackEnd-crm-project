@@ -70,12 +70,13 @@ const verifiyEmailController = async (req, res) => {
   }
 };
 
-export const getUsers = async (req, res) => {
-  const users = await getAllUsers();
 
-  res.status(200).json({
-    success: true,
-    data: users,
+export const getUsers = async (req, res) => {
+  console.log("🔥 USERS ROUTE HIT");
+
+  return res.status(200).json({
+    ok: true,
+    message: "route works",
   });
 };
 
