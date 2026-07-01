@@ -1,5 +1,5 @@
 import {Router} from  'express'
-import {registerController,loginController,refreshTokenController, logoutController,verifiyEmailController} from "./auth.controller.js"
+import {registerController,loginController,refreshTokenController, logoutController,verifiyEmailController, getUsers} from "./auth.controller.js"
 import auth from '../../common/middleware/auth.middleware.js'
 import adminOnly from '../../common/middleware/admin.middleware.js'
 // import {registerValidation,

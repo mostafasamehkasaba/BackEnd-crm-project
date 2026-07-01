@@ -171,4 +171,4 @@ export const getAllUsers = async () => {
 };
 
 
-export { register, login, refreshToken, logout,verifyEmailوgetAllUsers };
+export { register, login, refreshToken, logout,verifyEmail };
