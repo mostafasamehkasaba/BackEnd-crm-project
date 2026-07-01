@@ -14,7 +14,7 @@ const transproter = nodemailer.createTransport({
 
 export const sendEmail = async (to, token) => {
     try {
-      const verifyLink = `http://localhost:8000/api/auth/verify-email/${encodeURIComponent(token)}`;
+      const verifyLink = `https://backend-crm-project-production.up.railway.app/api/auth/verify-email/${encodeURIComponent(token)}`;
 
         const info = await transproter.sendMail({
             from: `"Real Estate CRM" <${process.env.EMAIL_USER}>`,
