@@ -122,3 +122,4 @@ export const deleteClient = async (id) => {
 
   return await clientModel.findByIdAndDelete(id);
 };
+

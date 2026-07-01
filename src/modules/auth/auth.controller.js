@@ -70,6 +70,15 @@ const verifiyEmailController = async (req, res) => {
   }
 };
 
+export const getUsers = async (req, res) => {
+  const users = await getAllUsers();
+
+  res.status(200).json({
+    success: true,
+    data: users,
+  });
+};
+
 export { 
   registerController, 
   loginController, 

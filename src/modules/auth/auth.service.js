@@ -161,4 +161,14 @@ const verifyEmail = async (token) => {
     throw err;
   }
 };
-export { register, login, refreshToken, logout,verifyEmail };
+
+
+export const getAllUsers = async () => {
+  return await Usermodel.find(
+    { role: "USER" },
+    "name email phone"
+  );
+};
+
+
+export { register, login, refreshToken, logout,verifyEmailوgetAllUsers };
