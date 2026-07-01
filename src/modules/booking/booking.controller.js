@@ -33,7 +33,7 @@ export const getBookingByIdController = async (req, res) => {
 
 export const updateBookingStatusController = async (req, res) => {
   try {
-    const booking = await BS.updateBookingStatus(req.params.id, req.body.status);
+    const booking = await BS.updateBookingStatus(req.params.id, req.body);
     return successResponse(res, "Booking status updated", booking, HttpStatus.OK);
   } catch (err) {
     return errorResponse(res, err.message, HttpStatus.BAD_REQUEST);
