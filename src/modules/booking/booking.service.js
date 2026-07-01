@@ -59,8 +59,13 @@ export const updateBookingStatus = async (id, status) => {
 };
 
 export const deleteBooking = async (id) => {
-  const booking = await bookingModel.findByIdAndDelete(id);
-
+  const booking = await bookingModel.findById(id);
   if (!booking) throw new Error("Booking not found");
+
+  await PropertyModel.findByIdAndUpdate(booking.property_id, {
+    status: "available",
+  });
+
+  await bookingModel.findByIdAndDelete(id);
   return booking;
 };
