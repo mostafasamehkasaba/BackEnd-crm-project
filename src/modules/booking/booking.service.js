@@ -5,12 +5,12 @@ import { PropertyModel } from "../../DB/models/property.model.js";
 // modules/booking/booking.service.js
 
 export const createBooking = async (data) => {
-  const { property_id, name, email, phone, status } = data;
+  const { property_id, name, email, phone } = data;
 
   const property = await PropertyModel.findById(property_id);
   if (!property) throw new Error("Property not found");
 
-  if (status === "CONFIRMED" && property.status !== "available") {
+  if (property.status !== "available") {
     throw new Error("Property is already booked or unavailable");
   }
 
@@ -19,18 +19,11 @@ export const createBooking = async (data) => {
     name,
     email,
     phone,
-    status: status || "PENDING",  
+    status: "PENDING",
   });
 
-
-  if (status === "CONFIRMED") {
-    property.status = "booked";
-    await property.save();
-  } 
-  else {
-    property.status = "available";
-    await property.save();
-  }
+  property.status = "booked";
+  await property.save();
 
   return booking;
 };
@@ -51,7 +44,7 @@ export const getBookingById = async (id) => {
 export const updateBookingStatus = async (id, status) => {
   const booking = await bookingModel.findByIdAndUpdate(
     id,
-    { status , name ,email},
+    { status , name ,email, phone},
     { new: true }
   );
   if (!booking) throw new Error("Booking not found");
