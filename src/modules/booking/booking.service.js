@@ -41,10 +41,10 @@ export const getBookingById = async (id) => {
   return booking;
 };
 
-export const updateBookingStatus = async (id, status) => {
+export const updateBookingStatus = async (id, data) => {
   const booking = await bookingModel.findByIdAndUpdate(
     id,
-    data,
+    { $set: data },
     { new: true }
   );
   if (!booking) throw new Error("Booking not found");
